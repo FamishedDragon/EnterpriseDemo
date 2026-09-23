@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Builds DB docker image
-# Runs docker compose to spin up tsf-api with all deps
+# Runs docker compose to spin up enterprise-api with all deps
 # Currently Postgress
 
 # Get directory of currently executing script
