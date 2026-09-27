@@ -10,6 +10,7 @@ from app.schemas.project import (
     ProjectCreate,
     ProjectResponse,
     ProjectUpdate,
+    ProjectSummaryResponse
 )
 from app.schemas.work_item import WorkItemResponse
 from app.models.work_item import WorkItem
@@ -115,3 +116,33 @@ def list_project_work_items(
     )
 
     return db.scalars(statement).all()
+
+@router.get(
+    "/{project_id}/summary",
+    response_model=ProjectSummaryResponse
+)
+def get_project_summary(
+        project_id: int,
+        db: Session = Depends(get_db)
+):
+    project = get_project_or_404(project_id, db)
+
+    work_items_statement = (
+        select(WorkItem)
+        .where(WorkItem.project_id == project.id)
+        .order_by(WorkItem.id)
+    )
+
+    work_items = db.scalars(work_items_statement).all()
+
+    statement = {
+        "id": project_id,
+        "name": project.name,
+        "status": project.status,
+        "total_work_items": len(work_items),
+        "todo": sum(item.status == "todo" for item in work_items),
+        "in_progress": sum(item.status == "in_progress" for item in work_items),
+        "done": sum(item.status == "done" for item in work_items)
+    }
+
+    return statement

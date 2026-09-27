@@ -39,3 +39,12 @@ class ProjectResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class ProjectSummaryResponse(BaseModel):
+    id: int
+    name: str
+    status: str
+    total_work_items: int
+    todo: int
+    in_progress: int
+    done: int
