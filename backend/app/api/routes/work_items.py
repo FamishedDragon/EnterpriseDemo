@@ -41,24 +41,6 @@ def create_work_item(
     return work_item
 
 @router.get(
-    "/project/{project_id}",
-    response_model=list[WorkItemResponse]
-)
-def list_work_items(
-    project_id: int,
-    db: Session = Depends(get_db)
-):
-    project = get_project_or_404(project_id, db)
-
-    statement = (
-        select(WorkItem)
-        .where(WorkItem.project_id == project_id)
-        .order_by(WorkItem.id)
-    )
-
-    return db.scalars(statement).all()
-
-@router.get(
     "/{work_item_id}",
     response_model=WorkItemResponse
 )

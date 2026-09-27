@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,8 +11,11 @@ from app.schemas.project import (
     ProjectResponse,
     ProjectUpdate,
 )
+from app.schemas.work_item import WorkItemResponse
+from app.models.work_item import WorkItem
 
 from app.api.crud.projects import get_project_or_404
+
 
 router = APIRouter(
     prefix="/projects",
@@ -92,3 +97,21 @@ def delete_project(
 
     db.delete(project)
     db.commit()
+
+@router.get(
+    "/{preoject_id}/work-items",
+    response_model=list[WorkItemResponse]
+)
+def list_project_work_items(
+    project_id: int,
+    db: Session = Depends(get_db)
+):
+    project = get_project_or_404(project_id, db)
+
+    statement = (
+        select(WorkItem)
+        .where(WorkItem.project_id == project.id)
+        .order_by(WorkItem.id)
+    )
+
+    return db.scalars(statement).all()

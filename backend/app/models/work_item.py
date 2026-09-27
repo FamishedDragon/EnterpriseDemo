@@ -1,9 +1,13 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.project import Project
 
 
 class WorkItem(Base):
@@ -46,4 +50,8 @@ class WorkItem(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False
+    )
+
+    project: Mapped["Project"] = relationship(
+        back_populates="work_items"
     )
