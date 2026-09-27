@@ -10,7 +10,8 @@ from app.schemas.project import (
     ProjectUpdate,
 )
 
-# Router
+from app.api.crud.projects import get_project_or_404
+
 router = APIRouter(
     prefix="/projects",
     tags=["Projects"],
@@ -91,15 +92,3 @@ def delete_project(
 
     db.delete(project)
     db.commit()
-
-
-# Utility
-def get_project_or_404(project_id: int, db: Session) -> Project:
-    project = db.get(Project, project_id)
-
-    if project is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found"
-        )
-    return project
